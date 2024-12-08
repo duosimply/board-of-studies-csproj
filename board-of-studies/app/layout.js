@@ -1,5 +1,10 @@
-import { Space_Grotesk } from 'next/font/google'
+import { Space_Grotesk, Bodoni_Moda } from 'next/font/google'
 import "./globals.css";
+
+const bodoni = Bodoni_Moda({
+  subsets: ['latin'],
+  display: 'swap'
+})
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -13,7 +18,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={spaceGrotesk.className}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${bodoni.variable}`}>
       <body>
         {children}
       </body>
