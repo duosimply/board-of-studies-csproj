@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { login, signup } from "./actions";
+import { login } from "./actions";
 
 const Login = () => {
 

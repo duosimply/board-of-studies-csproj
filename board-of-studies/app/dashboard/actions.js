@@ -9,6 +9,5 @@ export const signout = async () => {
 
     const {error} = await supabase.auth.signOut()
 
-    revalidatePath('/', 'layout')
     redirect('/login')
 }

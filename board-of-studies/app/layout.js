@@ -19,7 +19,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${bodoni.variable}`}>
-      <body>
+      <body className='bg-[#F0F6FF]'>
         {children}
       </body>
     </html>
