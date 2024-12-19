@@ -65,11 +65,11 @@ const Login = () => {
                 )}
               </div>
             </div>
-            <div className="flex flex-row justify-end">
+            {/* <div className="flex flex-row justify-end">
               <div className="font-space_grotesk text-xs hover:underline cursor-pointer">
                 Forgot Password?
               </div>
-            </div>
+            </div> */}
             <button
               type="submit"
               className="bg-black w-full text-white px-4 py-[0.75rem] rounded-xl my-4 text-sm font-semibold font-space_grotesk"

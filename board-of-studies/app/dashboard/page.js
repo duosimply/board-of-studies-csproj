@@ -8,13 +8,16 @@ const Dashboard = () => {
 
     return (
         <>
-            <div className="w-[96vw] mx-auto h-[50vh] bg-white rounded-md shadow-md">
+            <div className="w-[96vw] mx-auto h-min pb-6 bg-white rounded-md shadow-md">
                 <h1 className="font-bold text-xl py-4 px-6">Semester Overview</h1>
                 
-                <SemBox/>
+                <div className="flex flex-row justify-center gap-4">
+
+                <SemBox sem={1}/>
+                </div>
                 
             </div>
-            <form action={signout}><button type="submit">Sign Out</button></form>
+            
         </>
     )
 }

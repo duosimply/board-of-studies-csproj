@@ -1,12 +1,20 @@
+import { signout } from "./actions";
+
 export default function DashLayout({ children }) {
   return (
-    <div>
+    <div className="font-space_grotesk">
       <nav className="flex flex-row justify-between w-full h-[60px] drop-shadow-md items-center px-4 bg-white">
         <div>
           Management
         </div>
+        <div className="flex flex-row gap-8">
+
         <div>
           User
+        </div>
+        <div>
+        <form action={signout}><button type="submit">Sign Out</button></form>
+        </div>
         </div>
       </nav>
       <div className="flex flex-row ml-12 my-6 justify-between w-[34vw]">
