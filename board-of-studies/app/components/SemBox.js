@@ -1,11 +1,10 @@
-
-import { createClient } from "../utils/supabase/server"
-import Course from "./Course"
+import { createClient } from "../utils/supabase/server";
+import Course from "./Course";
 
 const SemBox = async ({ sem }) => {
 
-    const supabase = await createClient()
-    const { data, error } = await supabase.from('Courses').select('*')
+  console.log(data);
+  console.log(error);
 
     // const data = [{
     //     course_name: 'Web Technologies Lab',
