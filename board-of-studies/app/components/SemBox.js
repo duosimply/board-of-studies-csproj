@@ -3,16 +3,9 @@ import Course from "./Course";
 
 const SemBox = async ({ sem }) => {
 
-  console.log(data);
-  console.log(error);
+    const supabase = await createClient()
 
-    // const data = [{
-    //     course_name: 'Web Technologies Lab',
-    //     course_code: '24ECSP304',
-    //     lect_points: 0,
-    //     tut_points: 0,
-    //     pract_points: 3
-    // }]
+    const { data, error } = await supabase.from('Courses').select('*')
 
     return (
         <div className="border-[1px] w-[26vw] max-w-[26vw] rounded-md">
