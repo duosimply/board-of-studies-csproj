@@ -1,12 +1,16 @@
 import { createClient } from "../utils/supabase/server";
 import Course from "./Course";
+import NewCourseModel from "./NewCourseModal";
 
-const SemBox = async ({ sem }) => {
+const SemBox = async ({ sem, batch }) => {
 
     const supabase = await createClient()
+    const semid = 'sem' + batch + sem 
 
-    const { data, error } = await supabase.from('Courses').select('*')
+    let { data, error1 } = await supabase.from('Semesters').select('*').eq('sem_id', semid)
 
+    const courses = data[0].course_ids.split(',')
+    // console.log(courses)
     return (
         <div className="border-[1px] w-[26vw] max-w-[26vw] rounded-md">
             <div className="bg-[#f0f6ff]">
@@ -16,8 +20,9 @@ const SemBox = async ({ sem }) => {
                 </h1>
             </div>
             <div className="flex flex-col items-center justify-center">
-                {data.map((course, index) => {
-                    return <Course data={course} key={course.course_code} index={index} length={data.length}/>
+                <NewCourseModel semid={semid} />
+                {courses.map((course, index) => {
+                    return <Course course={course} key={index} index={index} length={courses.length} semid={semid}/>
                 })}
             </div>
         </div>

@@ -1,17 +1,31 @@
 import Image from "next/image"
+import Button from "./Button"
+import { createClient } from "../utils/supabase/server"
+import MoveButton from "./MoveButton"
 
-const Course = ({ data, index, length }) => {
+const Course = async ({ course, index, length, semid }) => {
+
+    const supabase = await createClient()
+    const { data, error } = await supabase.from('Courses').select('*').eq('course_code', course)
+    
+    if (data === null)
+        return
+    const info = data[0]
+
+    if (info === undefined || info === null)
+        return
+
     return (
-        <div className={`border-[1px] w-[90%] mt-6 rounded-md ${(index === length - 1) ? 'mb-6' : 'mb-0'} `}>
+        <div className={`border-[1px] w-[90%] mt-6 rounded-md ${(index === length - 1)? 'mb-6': 'mb-0'} shadow`}>
             <div className="flex flex-row justify-between pb-4">
                 <div className="flex flex-col justify-start">
                     <div>
-                        <h5 className="text-sm font-medium pt-1 px-2">{data.course_name}</h5>
+                        <h5 className="text-sm font-medium pt-1 px-2">{info.course_name}</h5>
                     </div>
                     <div>
                         <div>
                             <p className="text-xs font-normal px-2">
-                                {data.course_code}
+                                {info.course_code}
                             </p>
                         </div>
                     </div>
@@ -20,14 +34,13 @@ const Course = ({ data, index, length }) => {
                     <Image src='/chart-simple-solid.svg' width={12} height={12} alt='credits icon'/>
 
                     <p>
-                        {data.lect_points + data.tut_points + data.pract_points} Credits
+                        {info.lect_points + info.tut_points + info.pract_points} Credits
                     </p> 
                 </div>
             </div>
-            <div className="flex flex-row justify-end pt-4">
-                <button className="text-xs bg-blue-600 rounded-xl px-2 py-1 text-white mr-3 mb-3">
-                    Syllabus
-                </button>
+            <div className="flex flex-row justify-between pt-4">
+                <MoveButton currentSem={semid} currentCourse={info.course_code}/>
+                <Button course_code={info.course_code}/>
             </div>
         </div>
     )

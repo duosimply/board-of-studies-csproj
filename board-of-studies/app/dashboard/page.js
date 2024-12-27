@@ -9,14 +9,14 @@ const Dashboard = () => {
                 
                 <div className="flex flex-row justify-center gap-4 flex-wrap">
 
-                <SemBox sem={1}/>
-                <SemBox sem={2}/>
-                <SemBox sem={3}/>
-                <SemBox sem={4}/>
-                <SemBox sem={5}/>
-                <SemBox sem={6}/>
-                <SemBox sem={7}/>
-                <SemBox sem={8}/>
+                <SemBox sem={1} batch={2022}/>
+                <SemBox sem={2} batch={2022}/>
+                <SemBox sem={3} batch={2022}/>
+                <SemBox sem={4} batch={2022}/>
+                <SemBox sem={5} batch={2022}/>
+                <SemBox sem={6} batch={2022}/>
+                <SemBox sem={7} batch={2022}/>
+                <SemBox sem={8} batch={2022}/> 
                 </div>
                 
             </div>
