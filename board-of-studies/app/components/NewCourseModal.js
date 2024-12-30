@@ -28,7 +28,6 @@ const NewCourseModel = ({semid}) => {
     await supabase.from('Semesters').update({course_ids: currentCourses}).eq('sem_id', semid)
     await supabase.from('Courses').insert(updateObj)
     await supabase.from('CourseContent').insert({course_id: updateObj.course_code, chapters: 'Title,Description,1'})
-    redirect('/dashboard')
   }
 
   useEffect(() => {
