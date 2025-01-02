@@ -3,10 +3,12 @@
 import { useState } from "react"
 import { createClient } from "../utils/supabase/client"
 import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 const  MoveButton = ({ currentSem, currentCourse }) => {
 
     const supabase = createClient()
+    const router = useRouter()
 
     let [value, setValue] = useState(1)
 
@@ -29,7 +31,7 @@ const  MoveButton = ({ currentSem, currentCourse }) => {
 
         await supabase.from('Semesters').update({course_ids: currentCourses}).eq('sem_id', currentSem)
         await supabase.from('Semesters').update({course_ids: addedCourses}).eq('sem_id', destSem)
-        redirect('/dashboard')
+        router.refresh()
     }
 
     return (
