@@ -19,7 +19,7 @@ const NewCourseModel = ({semid}) => {
         'pract_points' : formData.get('cp'),
     }
 
-    // console.log(updateObj)
+    console.log(updateObj)
 
     let currentCourses = (await supabase.from('Semesters').select('course_ids').eq('sem_id', semid)).data[0].course_ids
     

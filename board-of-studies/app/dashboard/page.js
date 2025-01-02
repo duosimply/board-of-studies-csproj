@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import BatchSelector from '../components/BatchSelector'
+import BatchAdder from '../components/BatchAdder'
 import SemBox from '../components/SemBox'
 import { createClient } from '../utils/supabase/client'
 
@@ -31,8 +32,10 @@ const Dashboard = () => {
         <div className='flex flex-row justify-evenly items-center mr-6'>
           <BatchSelector set={setBatch} />
           {(userRole === 'superadmin')? 
-          <button onClick={() => setEditing(!isEditing)} className='w-max h-max bg-blue-600 rounded-md py-1.5 px-4 text-white active:bg-blue-800'>Toggle Edit</button>
-            : <p></p>}
+          <div className='flex flex-row'>
+          <BatchAdder />
+          <button onClick={() => setEditing(!isEditing)} className='w-max  bg-blue-600 rounded-md py-1.5 px-4 text-white active:bg-blue-800'>Toggle Edit</button>
+           </div> : <></>}
           </div>
         </div>
         <div className='flex flex-row justify-center gap-4 flex-wrap'>
