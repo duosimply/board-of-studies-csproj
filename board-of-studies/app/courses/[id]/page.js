@@ -14,6 +14,7 @@ const CourseDetails = ({ params }) => {
     Hours: ''
   }); // State for the new chapter
   let [chapToUpdate, setChapToUpdate] = useState(0);
+  const [userRole, setUserRole] = useState(null); // State to hold user role
 
   const courseCode = React.use(params).id; // Unwrap the params and extract id (courseCode)
 
@@ -31,7 +32,7 @@ const CourseDetails = ({ params }) => {
       }
 
       if (data.length === 0) {
-        setError(`Course with code ${courseCode} not found`);
+        setError("Course with code ${courseCode} not found");
         return;
       }
 
@@ -42,14 +43,46 @@ const CourseDetails = ({ params }) => {
       });
       setCourseData(temp); // Update the state
     } catch (err) {
-      console.error('Error fetching course details:', err.message);
-      setError(`Failed to fetch course details: ${err.message}`);
+      console.error("Error fetching course details:", err.message);
+      setError("Failed to fetch course details: ${err.message}");
     }
   };
 
   useEffect(() => {
     fetchCourseDetails(); // Call the function to fetch data when the component mounts
   }, [courseCode]); // Re-fetch whenever courseCode changes
+
+  // Fetching user role
+  useEffect(() => {
+    const getRole = async () => {
+      try {
+        // Get the current user
+        const { data: user, error: authError } = await createClient().auth.getUser();
+        if (authError) {
+          throw authError;
+        }
+
+        if (user) {
+          // Fetch the role from the user_roles table based on the user id
+          const { data: role, error: roleError } = await createClient()
+            .from('user_roles')
+            .select('role')
+            .eq('id', user.user.id) // Ensure the id is correct
+            .single(); // Use .single() since you expect only one result
+
+          if (roleError) {
+            throw roleError;
+          }
+
+          setUserRole(role?.role || 'user'); // Default to 'user' if no role is found
+        }
+      } catch (err) {
+        console.error("Error fetching user role:", err.message);
+      }
+    };
+
+    getRole(); // Call the function to fetch user role on mount
+  }, []); // Empty dependency array to run only once on component mount
 
   // Function to handle delete chapter
   const handleDelete = async (unitIndex, chapterIndex) => {
@@ -71,10 +104,10 @@ const CourseDetails = ({ params }) => {
       }
 
       setCourseData(updatedChapters);
-      alert('Chapter deleted successfully');
+      alert("Chapter deleted successfully");
     } catch (err) {
-      console.error('Error deleting chapter:', err.message);
-      alert(`Error deleting chapter: ${err.message}`);
+      console.error("Error deleting chapter:", err.message);
+      alert("Error deleting chapter: ${err.message}");
     }
   };
 
@@ -85,7 +118,7 @@ const CourseDetails = ({ params }) => {
 
       // Only update the chapter that has been edited
       const updatedChapters = [...courseData];
-      
+
       // Ensure that the edited chapter is updated with the latest values
       updatedChapters[chapToUpdate] = {
         Title: editingCourse.Title,
@@ -106,10 +139,10 @@ const CourseDetails = ({ params }) => {
 
       setCourseData(updatedChapters); // Update the local state with the modified chapter
       setIsEditing(false); // Close the edit mode
-      alert('Chapter updated successfully');
+      alert("Chapter updated successfully");
     } catch (err) {
-      console.error('Error updating chapter:', err.message);
-      alert(`Error updating chapter: ${err.message}`);
+      console.error("Error updating chapter:", err.message);
+      alert("Error updating chapter: ${err.message}");
     }
   };
 
@@ -153,10 +186,10 @@ const CourseDetails = ({ params }) => {
 
       setCourseData(updatedChapters); // Update the local state
       setNewChapter({ Title: '', Content: '', Hours: '' }); // Reset the form fields
-      alert('New chapter added successfully');
+      alert("New chapter added successfully");
     } catch (err) {
-      console.error('Error adding new chapter:', err.message);
-      alert(`Error adding new chapter: ${err.message}`);
+      console.error("Error adding new chapter:", err.message);
+      alert("Error adding new chapter: ${err.message}");
     }
   };
 
@@ -259,6 +292,13 @@ const CourseDetails = ({ params }) => {
       cursor: 'pointer',
       fontSize: '1.1em',
     },
+    pTag: {
+      fontSize: '1.2em',
+      color: '#333',
+      margin: '10px 0',
+      fontWeight: 'normal',
+      lineHeight: '1.6',
+    },
     unitheader: {
       fontSize: '1.8em',
       fontWeight: 'bold',
@@ -320,18 +360,23 @@ const CourseDetails = ({ params }) => {
 
               <br />
               <div style={styles.buttonContainer}>
-                <button
-                  style={styles.button}
-                  onClick={() => handleEdit(unitIndex, chapIndex)} // Pass both unit and chapter index
-                >
-                  Edit
-                </button>
-                <button
-                  style={styles.button}
-                  onClick={() => handleDelete(unitIndex, chapIndex)} // Pass both unit and chapter index
-                >
-                  Delete
-                </button>
+                {/* Display buttons only for superadmin */}
+                {userRole === 'superadmin' && (
+                  <>
+                    <button
+                      style={styles.button}
+                      onClick={() => handleEdit(unitIndex, chapIndex)} // Pass both unit and chapter index
+                    >
+                      Edit
+                    </button>
+                    <button
+                      style={styles.button}
+                      onClick={() => handleDelete(unitIndex, chapIndex)} // Pass both unit and chapter index
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
               </div>
               <br />
               <hr />
@@ -341,36 +386,45 @@ const CourseDetails = ({ params }) => {
         </div>
       ))}
 
+      {/* <p style={styles.pTag}>ISA: 50</p>
+      <p style={styles.pTag}>ESA: 50</p>
+      <p style={styles.pTag}>Total marks: 100</p>
+      <p style={styles.pTag}>Exam Duration: 3hrs</p> */}
+
        {/* New Chapter Form */}
-       <div style={styles.header}>Add new Course</div>
-       <div style={styles.editForm}>
-        <input
-          style={styles.input}
-          type="text"
-          placeholder="Title"
-          value={newChapter.Title}
-          onChange={(e) => setNewChapter({ ...newChapter, Title: e.target.value })}
-        />
-        <textarea
-          style={styles.input}
-          placeholder="Content"
-          value={newChapter.Content}
-          onChange={(e) => setNewChapter({ ...newChapter, Content: e.target.value })}
-        />
-        <input
-          style={styles.input}
-          type="number"
-          placeholder="Hours"
-          value={newChapter.Hours}
-          onChange={(e) => setNewChapter({ ...newChapter, Hours: e.target.value })}
-        />
-        <button
-          style={styles.formButton}
-          onClick={handleAddNewChapter}
-        >
-          Add New Chapter
-        </button>
-      </div>
+       {userRole === 'superadmin' && (
+         <div style={styles.header}>Add new Course</div>
+       )}
+       {userRole === 'superadmin' && (
+        <div style={styles.editForm}>
+          <input
+            style={styles.input}
+            type="text"
+            placeholder="Title"
+            value={newChapter.Title}
+            onChange={(e) => setNewChapter({ ...newChapter, Title: e.target.value })}
+          />
+          <textarea
+            style={styles.input}
+            placeholder="Content"
+            value={newChapter.Content}
+            onChange={(e) => setNewChapter({ ...newChapter, Content: e.target.value })}
+          />
+          <input
+            style={styles.input}
+            type="number"
+            placeholder="Hours"
+            value={newChapter.Hours}
+            onChange={(e) => setNewChapter({ ...newChapter, Hours: e.target.value })}
+          />
+          <button
+            style={styles.formButton}
+            onClick={handleAddNewChapter}
+          >
+            Add Chapter
+          </button>
+        </div>
+      )}
     </div>
   );
 };

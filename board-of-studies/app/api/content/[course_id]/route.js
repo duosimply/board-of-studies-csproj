@@ -1,4 +1,6 @@
-import supabase from "../../../utils/supabase/client"; // Adjust the path if necessary
+// import supabase from "../../../utils/supabase/client"; // Adjust the path if necessary
+
+import { createClient } from "@/app/utils/supabase/server";
 
 // Named export for handling GET requests
 export async function GET(req, { params }) {
@@ -8,6 +10,7 @@ export async function GET(req, { params }) {
   console.log("Course ID from URL:", course_id);
 
   try {
+    const supabase = await createClient()
     // Fetch the course content data from the 'CourseContent' table
     const { data: courseContentData, error: courseContentError } =
       await supabase

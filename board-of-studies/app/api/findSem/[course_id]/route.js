@@ -1,4 +1,5 @@
-import supabase from "../../../utils/supabase/client"; // Adjust the path if necessary
+import { createClient } from "@/app/utils/supabase/server";
+// import supabase from "../../../utils/supabase/client"; // Adjust the path if necessary
 export async function GET(req, { params }) {
   const { course_id } = await params; // Get course_id from the URL parameter
 
@@ -6,6 +7,7 @@ export async function GET(req, { params }) {
   console.log("Course ID from URL:", course_id);
 
   try {
+    const supabase = await createClient()
     // Query the Semesters table where course_ids contains the given course_id
     const { data, error } = await supabase
       .from("Semesters")

@@ -76,7 +76,7 @@ const Course = ({ course, index, length, semid, editing }) => {
           </p>
         </div>
       </div>
-      <div className={`flex flex-row ${(editing)? 'justify-between':'justify-end'} pt-4`}>
+      <div className={`flex flex-row items-center ${(editing)? 'justify-between':'justify-end'} pt-4`}>
         {editing && (
           <>
             <MoveButton
@@ -89,7 +89,8 @@ const Course = ({ course, index, length, semid, editing }) => {
             />
           </>
         )}
-        <Button course_code={info.course_code} />
+        <Button course_code={info.course_code} page={'courses'} text={'Syllabus'}/>
+        <Button course_code={info.course_code} page={'courses3'} text={'Changes'}/>
       </div>
     </div>
   )

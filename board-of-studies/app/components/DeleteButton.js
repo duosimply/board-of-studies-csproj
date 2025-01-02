@@ -18,7 +18,7 @@ const DeleteButton = ({currentSem, currentCourse}) => {
   }
 
   return (
-    <button onClick={handleDelete} className='text-xs bg-blue-600 rounded-xl px-2 py-1 mx-2 text-white mr-3 mb-3'>
+    <button onClick={handleDelete} className='text-xs bg-blue-600 rounded-xl px-2 py-1 mx-2 text-white mr-3 mb-3 max-h-6'>
         Delete
     </button>
   )

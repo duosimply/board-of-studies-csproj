@@ -1,3 +1,4 @@
+import { createClient } from "@/app/utils/supabase/server";
 import supabase from "../../../utils/supabase/client"; // Adjust path if necessary
 
 // Named export for handling GET requests
@@ -6,6 +7,7 @@ export async function GET(req, { params }) {
 
   try {
     // Query the 'Courses' table for the course with the given course_id
+    const supabase = await createClient()
     const { data, error } = await supabase
       .from("Courses") // Assuming the table is called 'Courses'
       .select("*")

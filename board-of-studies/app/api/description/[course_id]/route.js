@@ -1,7 +1,9 @@
-import supabase from "../../../utils/supabase/client.js"; // Adjust path if necessary
+import { createClient } from "@/app/utils/supabase/server.js";
+// import supabase from "../../../utils/supabase/client.js"; // Adjust path if necessary
 
 export async function GET(request, { params }) {
   const { course_id } = await params; // Retrieving the `course_id` from the dynamic route
+  const supabase = await createClient()
 
   try {
     // Fetch course description from the `description` table for the given course_id

@@ -349,16 +349,46 @@ export default function CompareCourse() {
   const downloadPDF = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
     const margin = 20;
     let yPosition = 20;
 
     const addWrappedText = (text, y) => {
       const splitText = doc.splitTextToSize(text, pageWidth - margin * 2);
       doc.text(splitText, margin, y);
-      return y + splitText.length * 7;
+      return y + splitText.length * doc.getLineHeight() * 0.6; // Adjusted for compact space
     };
 
-    // Header Section: Course Name, Semester, Year
+    const checkAndAddPage = (heightNeeded = 0) => {
+      if (yPosition + heightNeeded > pageHeight - margin) {
+        doc.addPage();
+        yPosition = margin;
+        return true;
+      }
+      return false;
+    };
+
+    const addContentSection = (section, content) => {
+      const contentLines = doc.splitTextToSize(content, pageWidth - margin * 2);
+      const sectionHeight =
+        (contentLines.length + 1) * doc.getLineHeight() * 0.6;
+
+      if (yPosition + sectionHeight > pageHeight - margin) {
+        doc.addPage();
+        yPosition = margin;
+      }
+
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text(section, margin, yPosition);
+      yPosition += doc.getLineHeight() * 0.6;
+
+      doc.setFont("helvetica", "normal");
+      yPosition = addWrappedText(content, yPosition);
+      yPosition += doc.getLineHeight() * 0.5;
+    };
+
+    // Header
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     yPosition = addWrappedText(
@@ -370,55 +400,67 @@ export default function CompareCourse() {
       `Semester: ${semId?.semester || "N/A"} - Year: ${semId?.year || "N/A"}`,
       yPosition
     );
-    yPosition += 15; // Add spacing after header
+    yPosition += doc.getLineHeight() * 0.5;
 
-    // Context, Approach, Experiences Sections
-    ["Context", "Approach", "Experiences"].forEach((section) => {
-      doc.setFontSize(12);
+    // Content Sections
+    addContentSection("Context", updatedDescription.context || "");
+    addContentSection("Approach", updatedDescription.approach || "");
+    addContentSection("Experiences", updatedDescription.experiences || "");
+
+    // Chapters
+    if (updatedDescription.chapters) {
+      const chapterLines = updatedDescription.chapters.split("\n");
+      const chaptersHeight = chapterLines.length * doc.getLineHeight() * 0.8;
+
+      if (yPosition + chaptersHeight > pageHeight - margin) {
+        doc.addPage();
+        yPosition = margin;
+      }
+
       doc.setFont("helvetica", "bold");
-      doc.text(section, margin, yPosition);
-      yPosition += 8;
-      doc.setFont("helvetica", "normal");
-      yPosition = addWrappedText(
-        updatedDescription[section.toLowerCase()] || "",
-        yPosition
-      );
-      yPosition += 12;
-    });
+      doc.text("Chapters", margin, yPosition);
+      yPosition += doc.getLineHeight() * 0.5;
 
-    // Table setup
+      doc.setFont("helvetica", "normal");
+      chapterLines.forEach((chapter) => {
+        yPosition = addWrappedText(chapter, yPosition);
+      });
+    }
+
+    // Table
+    const headers = ["Field", "Old Value", "New Value", "Change Type", "Date"];
+    const columnWidths = [45, 35, 35, 30, 30];
+    const startX = margin;
+    const rowHeight = doc.getLineHeight();
+
+    if (yPosition + rowHeight * 2 > pageHeight - margin) {
+      doc.addPage();
+      yPosition = margin;
+    }
+
     doc.setFont("helvetica", "bold");
     doc.text("Course and Content Change History", margin, yPosition);
-    yPosition += 12;
+    yPosition += rowHeight * 0.7;
 
-    const headers = ["Field", "Old Value", "New Value", "Change Type", "Date"];
-    const columnWidths = [45, 35, 35, 30, 30]; // Adjusted column widths (no "Source" column)
-    const startX = margin;
-    const baseRowHeight = 12;
-
-    // Table headers
     let currentX = startX;
     doc.setFillColor(240, 240, 240);
-    doc.rect(startX, yPosition - 5, pageWidth - margin * 2, baseRowHeight, "F");
+    doc.rect(
+      startX,
+      yPosition - rowHeight / 2,
+      pageWidth - margin * 2,
+      rowHeight,
+      "F"
+    );
     doc.setFontSize(10);
+
     headers.forEach((header, i) => {
       doc.text(header, currentX, yPosition);
       currentX += columnWidths[i];
     });
-    yPosition += baseRowHeight;
+    yPosition += rowHeight * 0.5;
 
-    // Table content with increased spacing
     const changes = [...courseChanges, ...contentChanges];
     changes.forEach((change) => {
-      if (yPosition > doc.internal.pageSize.height - 30) {
-        doc.addPage();
-        yPosition = 20;
-      }
-
-      doc.setFont("helvetica", "normal");
-      currentX = startX;
-      doc.setFontSize(10);
-
       const rowData = [
         change.field_name,
         String(change.previous_value),
@@ -427,13 +469,21 @@ export default function CompareCourse() {
         new Date(change.changed_at).toLocaleDateString(),
       ];
 
-      const hasLongContent =
-        change.previous_value?.length > 50 || change.updated_value?.length > 50;
-      const rowHeight = hasLongContent ? baseRowHeight * 6 : baseRowHeight;
+      const maxLines = Math.max(
+        ...rowData.map(
+          (text) =>
+            doc.splitTextToSize(text, Math.min(...columnWidths) - 2).length
+        )
+      );
+      const calculatedRowHeight = maxLines * rowHeight * 0.5;
 
-      if (hasLongContent) {
-        yPosition += baseRowHeight;
+      if (yPosition + calculatedRowHeight > pageHeight - margin) {
+        doc.addPage();
+        yPosition = margin;
       }
+
+      currentX = startX;
+      doc.setFont("helvetica", "normal");
 
       rowData.forEach((text, i) => {
         const wrappedText = doc.splitTextToSize(text, columnWidths[i] - 2);
@@ -441,13 +491,34 @@ export default function CompareCourse() {
         currentX += columnWidths[i];
       });
 
-      yPosition += rowHeight;
-
-      if (hasLongContent) {
-        yPosition += baseRowHeight;
-      }
+      yPosition += calculatedRowHeight;
     });
 
+    // Add Course Coordinator, Teacher and Signature Section
+    const footerHeight = doc.getLineHeight() * 1; // Adjust space for footer content
+    checkAndAddPage(footerHeight);
+    yPosition += footerHeight;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Course Coordinator:", margin, yPosition);
+    yPosition += doc.getLineHeight();
+
+    doc.setFont("helvetica", "normal");
+    doc.text("", margin, yPosition); // You can replace "Dr. John Doe" with the actual course coordinator
+    yPosition += doc.getLineHeight() * 1;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Course Teacher:", margin, yPosition);
+    yPosition += doc.getLineHeight();
+
+    doc.setFont("helvetica", "normal");
+    doc.text("", margin, yPosition); // Replace with actual teacher name
+    yPosition += doc.getLineHeight() * 1.3;
+
+    doc.setFont("helvetica", "italic");
+    doc.text("Signature: _________", margin, yPosition);
+
+    // Save the PDF
     doc.save(`Course_Change_Summary_${courseId}.pdf`);
   };
 

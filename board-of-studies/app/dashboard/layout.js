@@ -10,9 +10,6 @@ export default function DashLayout({ children }) {
         </div>
         <div className="flex flex-row gap-8">
           <div>
-            User
-          </div>
-          <div>
             <form action={signout}><button type="submit">Sign Out</button></form>
           </div>
         </div>

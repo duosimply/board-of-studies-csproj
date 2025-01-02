@@ -1,10 +1,12 @@
-import supabase from "../../../utils/supabase/client"; // Adjust path if necessary
+import { createClient } from "@/app/utils/supabase/server";
+// import supabase from "../../../utils/supabase/client"; // Adjust path if necessary
 
 export async function GET(request, { params }) {
   const { course_id } = await params; // Extract the `course_id` from the URL parameters
   console.log("Params:", params);
   console.log("Course ID:", course_id);
   try {
+    const supabase = await createClient()
     // Fetch course change history from the `log_course_table` for the given `course_id`
     const { data, error } = await supabase
       .from("log_course_table") // The table containing course change logs

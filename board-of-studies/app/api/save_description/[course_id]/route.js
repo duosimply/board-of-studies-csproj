@@ -1,4 +1,5 @@
-import supabase from "../../../utils/supabase/client"; // Adjust path if necessary
+import { createClient } from "@/app/utils/supabase/server";
+// import supabase from "../../../utils/supabase/client"; // Adjust path if necessary
 
 export async function POST(request, { params }) {
   const { course_id } = await params;
@@ -16,6 +17,7 @@ export async function POST(request, { params }) {
 
   try {
     // Update course description in the database
+    const supabase = await createClient()
     const { data, error } = await supabase.from("description").upsert(
       {
         course_code: course_id, // Updated field to course_code
