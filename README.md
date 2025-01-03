@@ -1,17 +1,17 @@
----
+
 
 # Board of Studies - University Course Management
 
 ## Project Overview
 
-The **Board of Studies** is a web application developed for managing university courses. It utilizes **Supabase** and **Next.js** to handle user interactions and backend operations. The application features two different authorities based on login roles:
+**Board of Studies** is a web application developed for managing university courses. It utilizes **Supabase** and **Next.js** to handle user interactions and backend operations. The application features two different authorities based on login roles:
 
 - **Superadmin**: Has full administrative access to manage courses, syllabi, and internal updates.
 - **User**: Regular users can view course structures and syllabi but cannot make changes.
 
 The platform displays the course structures, syllabi, and internal changes implemented to the website for both administrators and users.
 
----
+
 
 ## Key Folders and Files
 
